@@ -54,6 +54,16 @@ class HostView(APIView):
         indices = json.JSONDecoder().decode(g.indices)
         return JsonResponse({'code': status.HTTP_200_OK, 'indices': indices})
 
+    def delete(self, request):
+        key = request.data.get('key')
+        try:
+            g = GroupPlaylist.objects.get(key=key)
+            g.delete()
+        except GroupPlaylist.DoesNotExist:
+            return JsonResponse({'code': status.HTTP_412_PRECONDITION_FAILED})
+
+        return JsonResponse({'code': status.HTTP_200_OK})
+
 
 
 
