@@ -13,5 +13,5 @@ class SongInfo(models.Model):
     key = models.ForeignKey(GroupPlaylist, on_delete=models.CASCADE)
     index = models.PositiveIntegerField()
     title = models.TextField(default="NoTitle")
-    Artist = models.TextField(default="")
-    Album = models.TextField(default="")
+    artist = models.TextField(default="")
+    album = models.TextField(default="")
