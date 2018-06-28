@@ -10,7 +10,7 @@ class GroupPlaylist(models.Model):
     indices = models.TextField(null=False, blank=False)
 
 class SongInfo(models.Model):
-    key = models.ForeignKey(GroupPlaylist, on_delete=models.CASCADE)
+    group_playlist = models.ForeignKey(GroupPlaylist, on_delete=models.CASCADE)
     index = models.PositiveIntegerField()
     title = models.TextField(default="NoTitle")
     artist = models.TextField(default="")
