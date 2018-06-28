@@ -43,6 +43,19 @@ class HostView(APIView):
 
         return JsonResponse({'code': status.HTTP_201_CREATED, 'key': key})
 
+    def get(self, request):
+        key = request.GET.get('key')
+        try:
+            g = GroupPlaylist.objects.get(key=key)
+        except GroupPlaylist.DoesNotExist:
+            return JsonResponse({'code': status.HTTP_412_PRECONDITION_FAILED})
+
+
+        indices = json.JSONDecoder().decode(g.indices)
+        return JsonResponse({'code': status.HTTP_200_OK, 'indices': indices})
+
+
+
 
 
 
