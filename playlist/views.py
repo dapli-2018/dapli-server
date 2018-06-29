@@ -13,13 +13,14 @@ class HostView(APIView):
     def post(self, request):
         songs = request.data.get('songs')
         title = request.data.get('title')
+        author = request.data.get('author')
         content = request.data.get('content')
         tag = request.data.get('tag')
 
         if type(songs) is not list or title == None:
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
-        p = Playlist.objects.create(title=title, content=content, tag=tag)
+        p = Playlist.objects.create(title=title, author=author, content=content, tag=tag)
 
         for i in range(len(songs)):
             songinfo = SongInfo.objects.create(
