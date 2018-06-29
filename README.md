@@ -28,6 +28,11 @@ $ python3 manage.py runserver 0.0.0.0:<port>
 |Data|Description|Type|
 |---|---|---|
 |songs|required|Array|
+|title|required|String|
+|Author|required|String|
+|Content|required|String|
+|tag|required|String|
+
 songs는 [[title, artist, album], ...] 형태의 이중 nested array
 
 - response
@@ -83,6 +88,7 @@ songs는 [[title, artist, album], ...] 형태의 이중 nested array
 |Name|Type|
 |---|---|
 |songs|Array|
+
 songs는 [[title, is_on_playlist, is_played], ...] 형태의 이중 nested array
 
 - status code:
@@ -216,7 +222,13 @@ songs는 [[title, artist, album, is_on_playlist, is_played], ...] 형태의 이�
 | ---- | ----------- | --------------- |
 | id   | required    | Number(Integer) |
 
-- response : status code
+- response : status code and JSON
+
+|Name|Type|
+|---|---|
+|image|String(url of image)|
+
+- status code
 
 | Code | Description |
 | ---- | ----------- |
