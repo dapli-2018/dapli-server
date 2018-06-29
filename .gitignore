@@ -110,3 +110,4 @@ venv.bak/
 dapli/secret.py
 playlist/migrations
 playlist/migrations/*
+templates/
