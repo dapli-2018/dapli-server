@@ -183,7 +183,7 @@ def search(request):
         result_serializer = PlaylistFeedSerializer(ps, many=True)
         return Response(result_serializer.data, status.HTTP_200_OK)
 
-    elif (criterion == "Author"):
+    elif (criterion == "author"):
         ps = Playlist.objects.filter(author__icontains=query)
         result_serializer = PlaylistFeedSerializer(ps, many=True)
         return Response(result_serializer, status=status.HTTP_200_OK)

@@ -308,7 +308,33 @@ songs는 [[title, artist, album, is_on_playlist, is_played], ...] 형태의 이�
 ```
 
 
+### Search
+1. search
 
+- url: group/search
+- method: GET
+- request:
+
+| Data | Description | Type            |
+| ---- | ----------- | --------------- |
+| criterion   | required    | String("title" | "author") |
+| query|required|String|
+
+- response: newsfeed랑 동일
+
+```json
+[
+    {
+        "id": 1,
+        "title": "Hello Dapli",
+        "author": "",
+        "date": "2018-06-29T22:58:28.415651+09:00",
+        "content": "Hello world and my friends.",
+        "tag": "#echo"
+    },
+    ... 이하 생략
+]
+```
 
 
 
