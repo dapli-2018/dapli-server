@@ -70,33 +70,43 @@ class ImageView(APIView):
             return Response(image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['POST'])
-def generate_key(request):
-    id = request.data.get('id')
+class KeyView(APIView):
+    def get(self, request):
+        id = request.data.get('id')
 
-    try:
-        p = Playlist.objects.get(id=id)
-    except Playlist.DoesNotExist:
-        return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
+        try:
+            p = Playlist.objects.get(id=id)
+        except Playlist.DoesNotExist:
+            return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
-    if AuthKey.objects.count() < 9000:
-        for i in range(1000, 9999):
-            try:
-                key = randint(1000, 9999)
-                k = AuthKey.objects.create(key=key, playlist=p)
-                k.save()
-            except IntegrityError:
-                continue
-            else:
-                return JsonResponse({'key': key}, status=status.HTTP_201_CREATED)
-    else:
-        return JsonResponse({}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        k = AuthKey.objects.get(playlist=p)
+        return JsonResponse({'key': k.key}, status=status.HTTP_200_OK)
 
-@api_view(['DELETE'])
-def expire_key(request):
-    key = request.data.get('key')
-    AuthKey.objects.get(key=key).delete()
-    return JsonResponse({}, status=status.HTTP_200_OK)
+    def post(self, request):
+        id = request.data.get('id')
+
+        try:
+            p = Playlist.objects.get(id=id)
+        except Playlist.DoesNotExist:
+            return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
+
+        if AuthKey.objects.count() < 9000:
+            for i in range(1000, 9999):
+                try:
+                    key = randint(1000, 9999)
+                    k = AuthKey.objects.create(key=key, playlist=p)
+                    k.save()
+                except IntegrityError:
+                    continue
+                else:
+                    return JsonResponse({'key': key}, status=status.HTTP_201_CREATED)
+        else:
+            return JsonResponse({}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+    def delete(self, request):
+        key = request.data.get('key')
+        AuthKey.objects.get(key=key).delete()
+        return JsonResponse({}, status=status.HTTP_200_OK)
 
 
 class GuestView(APIView):
@@ -157,5 +167,5 @@ def playlist_detail(request):
 @api_view(['GET'])
 def newsfeed(request):
     serializer = PlaylistFeedSerializer(Playlist.objects.all(), many=True)
-    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
