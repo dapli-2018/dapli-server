@@ -151,16 +151,16 @@ class GuestView(APIView):
 
 @api_view(['GET'])
 def playlist_detail(request):
-    id = request.data.get('id')
-
+    id = request.GET.get('id')
     try:
         p = Playlist.objects.get(id=id)
     except Playlist.DoesNotExist:
+        print("No list")
         return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
     s = SongInfo.objects.filter(playlist=p).order_by('index')
     serializer = SongInfoSerializer(s, many=True)
-    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 
