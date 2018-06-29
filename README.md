@@ -34,6 +34,7 @@ songs는 [[title, artist, album], ...] 형태의 이중 nested array
 
 |Name|Type|
 |---|---|
+|id|Number(Integer)|
 |key|Number(Integer)|
 
 - status code
@@ -54,7 +55,7 @@ songs는 [[title, artist, album], ...] 형태의 이중 nested array
 
 |Data|Description|Type|
 |---|---|---|
-|key|required|Number(Integer)|
+|id|required|Number(Integer)|
 
 - response : status code
 
@@ -75,7 +76,7 @@ songs는 [[title, artist, album], ...] 형태의 이중 nested array
 
 |Data|Description|Type|
 |---|---|---|
-|key|required|Number(Integer)|
+|id|required|Number(Integer)|
 
 - response
 
@@ -108,6 +109,7 @@ songs는 [[title, is_on_playlist, is_played], ...] 형태의 이중 nested array
 
 |Name|Type|
 |---|---|
+|id|Number(Integer)|
 |songs|Array|
 songs는 [[title, artist, album, is_on_playlist, is_played], ...] 형태의 이중 nested array
 
@@ -127,6 +129,7 @@ songs는 [[title, artist, album, is_on_playlist, is_played], ...] 형태의 이�
 
 |Data|Description|Type|
 |---|---|---|
+|id|Number(Integer)|
 |songs|required|Array|
 songs는 [[title, artist, album, is_on_playlist, is_played], ...] 형태의 이중 nested array
 
