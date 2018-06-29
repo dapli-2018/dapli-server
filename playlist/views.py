@@ -23,6 +23,8 @@ class HostView(APIView):
                     g.save()
                 except IntegrityError:
                     continue
+                else:
+                    break
         else:
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
@@ -89,7 +91,7 @@ class GuestView(APIView):
         with transaction.atomic():
             for song in SongInfo.objects.filter(group_playlist=g):
                 for i in range(len(new_playlist)):
-                    if (song.title == new_playlist[i][0]):
+                    if song.title == new_playlist[i][0] :
                         song.index = i
                         song.is_on_playlist = new_playlist[i][3]
                         song.is_played = new_playlist[i][4]
