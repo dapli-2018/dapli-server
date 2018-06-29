@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import status
-from playlist.models import SongInfo, GroupPlaylist
+from playlist.models import SongInfo, Playlist
 
 class HostView(APIView):
     def post(self, request):
@@ -15,11 +15,11 @@ class HostView(APIView):
         if type(songs) is not list:
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
-        if GroupPlaylist.objects.count() < 9000:
+        if Playlist.objects.count() < 9000:
             for i in range(1000, 9999):
                 try:
                     key = randint(1000, 9999)
-                    g = GroupPlaylist.objects.create(key=key)
+                    g = Playlist.objects.create(key=key)
                     g.save()
                 except IntegrityError:
                     continue
@@ -43,8 +43,8 @@ class HostView(APIView):
     def get(self, request):
         key = request.GET.get('key')
         try:
-            g = GroupPlaylist.objects.get(key=key)
-        except GroupPlaylist.DoesNotExist:
+            g = Playlist.objects.get(key=key)
+        except Playlist.DoesNotExist:
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
 
@@ -55,9 +55,9 @@ class HostView(APIView):
     def delete(self, request):
         key = request.data.get('key')
         try:
-            g = GroupPlaylist.objects.get(key=key)
+            g = Playlist.objects.get(key=key)
             g.delete()
-        except GroupPlaylist.DoesNotExist:
+        except Playlist.DoesNotExist:
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
         return JsonResponse({}, status=status.HTTP_200_OK)
@@ -68,8 +68,8 @@ class GuestView(APIView):
         key = request.GET.get('key')
 
         try:
-            g = GroupPlaylist.objects.get(key=key)
-        except GroupPlaylist.DoesNotExist:
+            g = Playlist.objects.get(key=key)
+        except Playlist.DoesNotExist:
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
         songs = SongInfo.objects.filter(group_playlist=g).order_by('index') \
@@ -81,8 +81,8 @@ class GuestView(APIView):
         new_playlist = request.data.get('songs')
 
         try:
-            g = GroupPlaylist.objects.get(key=key)
-        except GroupPlaylist.DoesNotExist:
+            g = Playlist.objects.get(key=key)
+        except Playlist.DoesNotExist:
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
         if type(new_playlist) is not list:
