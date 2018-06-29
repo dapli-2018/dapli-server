@@ -5,9 +5,11 @@ from django.core.validators import (MaxValueValidator, MinValueValidator)
 
 class Playlist(models.Model):
     title = models.CharField(max_length=90)
+    author = models.CharField(max_length=90)
     date = models.DateTimeField(auto_now_add=True)
     content = models.TextField(max_length=300)
     tag = models.CharField(max_length=90)
+    profile_image = models.FileField(blank=True)
 
 
 class SongInfo(models.Model):
