@@ -110,6 +110,8 @@ songs는 [[title, artist, album, is_on_playlist, is_played], ...] 형태의 이�
 |---|---|
 |200|Success|
 
+-----
+
 2. GroupPlaylist 업데이트
 
 - url: group/guest/
