@@ -1,5 +1,5 @@
 import json
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError
 from rest_framework.decorators import api_view
@@ -64,6 +64,44 @@ class HostView(APIView):
             return JsonResponse({'code': status.HTTP_412_PRECONDITION_FAILED})
 
         return JsonResponse({'code': status.HTTP_200_OK})
+
+
+class GuestView(APIView):
+    def get(self, request):
+        key = request.GET.get('key')
+
+        try:
+            g = GroupPlaylist.objects.get(key=key)
+        except GroupPlaylist.DoesNotExist:
+            return JsonResponse({'code': status.HTTP_412_PRECONDITION_FAILED})
+
+        songs = SongInfo.objects.filter(group_playlist=g).order_by('index') \
+            .values_list('title', 'is_on_playlist', 'is_played')
+        return JsonResponse({'code': status.HTTP_200_OK, 'songs': songs})
+
+    def put(self, request):
+        key = request.GET.get('key')
+        new_playlist = request.GET.get('songs')
+
+        try:
+            g = GroupPlaylist.objects.get(key=key)
+        except GroupPlaylist.DoesNotExist:
+            return JsonResponse({'code': status.HTTP_412_PRECONDITION_FAILED})
+
+        if type(new_playlist) is not list:
+            return JsonResponse({'code': status.HTTP_412_PRECONDITION_FAILED})
+
+        with transaction.atomic():
+            for song in SongInfo.objects.filter(group_playlist=g):
+                for i in range(new_playlist):
+                    if (song.title == new_playlist[i][0]):
+                        song.index = i
+                        song.save()
+
+        return JsonResponse({'code': status.HTTP_200_OK})
+
+
+
 
 
 
