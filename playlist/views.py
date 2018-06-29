@@ -1,4 +1,4 @@
-import json
+
 from random import randint
 from django.db import IntegrityError, transaction
 from django.http import JsonResponse
@@ -6,21 +6,26 @@ from django.core.exceptions import ValidationError
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import status
-from playlist.models import SongInfo, Playlist
+from playlist.models import SongInfo, Playlist, AuthKey
 
 class HostView(APIView):
     def post(self, request):
         songs = request.data.get('songs')
+        title = request.data.get('title')
+        content = request.data.get('content')
+        tag = request.data.get('tag')
 
-        if type(songs) is not list:
+        if type(songs) is not list or title == None:
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
-        if Playlist.objects.count() < 9000:
+        p = Playlist.objects.create(title=title, content=content, tag=tag)
+
+        if AuthKey.objects.count() < 9000:
             for i in range(1000, 9999):
                 try:
                     key = randint(1000, 9999)
-                    p = Playlist.objects.create(key=key)
-                    p.save()
+                    k = AuthKey.objects.create(key=key, playlist=p)
+                    k.save()
                 except IntegrityError:
                     continue
                 else:
@@ -41,9 +46,9 @@ class HostView(APIView):
         return JsonResponse({'key': key, 'id': p.id}, status=status.HTTP_201_CREATED)
 
     def get(self, request):
-        key = request.GET.get('key')
+        id = request.GET.get('id')
         try:
-            p = Playlist.objects.get(key=key)
+            p = Playlist.objects.get(id=id)
         except Playlist.DoesNotExist:
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
@@ -52,13 +57,12 @@ class HostView(APIView):
         return JsonResponse({'songs': songs}, status=status.HTTP_200_OK)
 
     def delete(self, request):
-        key = request.data.get('key')
+        id = request.data.get('id')
         try:
-            p = Playlist.objects.get(key=key)
+            p = Playlist.objects.get(id=id)
             p.delete()
         except Playlist.DoesNotExist:
-            return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
-
+            pass
         return JsonResponse({}, status=status.HTTP_200_OK)
 
 
@@ -67,12 +71,16 @@ class GuestView(APIView):
         key = request.GET.get('key')
 
         try:
-            p = Playlist.objects.get(key=key)
+            k = AuthKey.objects.get(key=key)
+            p = Playlist.objects.get(authkey=k)
+        except AuthKey.DoesNotExist:
+            return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
         except Playlist.DoesNotExist:
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
         songs = SongInfo.objects.filter(playlist=p).order_by('index') \
             .values_list('title', 'artist', 'album', 'is_on_playlist', 'is_played')
+
         return JsonResponse({'songs': list(songs), 'id': p.id}, status=status.HTTP_200_OK)
 
     def put(self, request):
