@@ -155,7 +155,6 @@ def playlist_detail(request):
     try:
         p = Playlist.objects.get(id=id)
     except Playlist.DoesNotExist:
-        print("No list")
         return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
     s = SongInfo.objects.filter(playlist=p).order_by('index')
