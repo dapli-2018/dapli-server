@@ -20,19 +20,6 @@ class HostView(APIView):
 
         p = Playlist.objects.create(title=title, content=content, tag=tag)
 
-        if AuthKey.objects.count() < 9000:
-            for i in range(1000, 9999):
-                try:
-                    key = randint(1000, 9999)
-                    k = AuthKey.objects.create(key=key, playlist=p)
-                    k.save()
-                except IntegrityError:
-                    continue
-                else:
-                    break
-        else:
-            return JsonResponse({}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
-
         for i in range(len(songs)):
             songinfo = SongInfo.objects.create(
                 playlist=p,
@@ -43,7 +30,7 @@ class HostView(APIView):
             )
             songinfo.save()
 
-        return JsonResponse({'key': key, 'id': p.id}, status=status.HTTP_201_CREATED)
+        return JsonResponse({'id': p.id}, status=status.HTTP_201_CREATED)
 
     def get(self, request):
         id = request.GET.get('id')
@@ -64,6 +51,26 @@ class HostView(APIView):
         except Playlist.DoesNotExist:
             pass
         return JsonResponse({}, status=status.HTTP_200_OK)
+
+    def put(self, request): # authkey 삭제
+        key = request.data.get('key')
+        AuthKey.objects.get(key=key).delete()
+        return JsonResponse({}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def generate_key(request):
+    if AuthKey.objects.count() < 9000:
+        for i in range(1000, 9999):
+            try:
+                key = randint(1000, 9999)
+                k = AuthKey.objects.create(key=key, playlist=p)
+                k.save()
+            except IntegrityError:
+                continue
+            else:
+                return JsonResponse({'key': key}, status=status.HTTP_201_CREATED)
+    else:
+        return JsonResponse({}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 
 class GuestView(APIView):
