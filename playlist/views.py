@@ -1,4 +1,5 @@
 import json
+from random import randint
 from django.db import IntegrityError, transaction
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError
@@ -7,7 +8,6 @@ from rest_framework.views import APIView
 from rest_framework import status
 from playlist.models import SongInfo, GroupPlaylist
 
-
 class HostView(APIView):
     def post(self, request):
         songs = request.data.get('songs')
@@ -15,23 +15,16 @@ class HostView(APIView):
         if type(songs) is not list:
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
-        max_key = GroupPlaylist.objects.order_by('-key').first()
-        indices = json.dumps(list(range(len(songs))))
-        if max_key == None:
-            key = 1000
-            g = GroupPlaylist.objects.create(key=key)
-            g.save()
-        else:
-            try:
-                g = GroupPlaylist.objects.create(key=max_key.key + 1)
-                g.save()
-                key = g.key
-            except ValidationError:  # key를 9999까지 발급했을 때
+        if GroupPlaylist.objects.count() < 9000:
+            for i in range(1000, 9999):
                 try:
-                    g = GroupPlaylist.objects.create(key=1000)
+                    key = randint(1000, 9999)
+                    g = GroupPlaylist.objects.create(key=key)
                     g.save()
-                except IntegrityError:  # 너무 많은 접속자로 잠시 제한
-                    return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
+                except IntegrityError:
+                    continue
+        else:
+            return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
         for i in range(len(songs)):
             songinfo = SongInfo.objects.create(
