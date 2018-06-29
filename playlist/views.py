@@ -1,12 +1,13 @@
-
 from random import randint
 from django.db import IntegrityError, transaction
 from django.http import JsonResponse
-from django.core.exceptions import ValidationError
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework import status
-from playlist.models import SongInfo, Playlist, AuthKey
+from .models import SongInfo, Playlist, AuthKey
+from .serializers import SongInfoSerializer, PlaylistFeedSerializer, PlaylistImageSerializer
 
 class HostView(APIView):
     def post(self, request):
@@ -52,6 +53,17 @@ class HostView(APIView):
             pass
         return JsonResponse({}, status=status.HTTP_200_OK)
 
+class ImageView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request, *args, **kwargs):
+        image_serializer = PlaylistImageSerializer(data=request.data)
+        if image_serializer.is_valid():
+            image_serializer.save()
+            return Response(image_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 def generate_key(request):
@@ -80,7 +92,6 @@ def expire_key(request):
     key = request.data.get('key')
     AuthKey.objects.get(key=key).delete()
     return JsonResponse({}, status=status.HTTP_200_OK)
-
 
 
 class GuestView(APIView):
@@ -129,6 +140,8 @@ class GuestView(APIView):
 
 
 
-
-
+@api_view(['GET'])
+def newsfeed(request):
+    serializer = PlaylistFeedSerializer(Playlist.objects.all(), many=True)
+    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 

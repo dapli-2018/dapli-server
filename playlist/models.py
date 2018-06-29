@@ -9,8 +9,7 @@ class Playlist(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     content = models.TextField(max_length=300)
     tag = models.CharField(max_length=90)
-    profile_image = models.FileField(blank=True)
-
+    image = models.FileField(blank=True)
 
 class SongInfo(models.Model):
     playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)
@@ -24,3 +23,4 @@ class SongInfo(models.Model):
 class AuthKey(models.Model):
     playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)
     key = models.IntegerField(unique=True, validators=[MaxValueValidator(9999), MinValueValidator(1000)])
+
