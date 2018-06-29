@@ -79,7 +79,11 @@ class KeyView(APIView):
         except Playlist.DoesNotExist:
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
-        k = AuthKey.objects.get(playlist=p)
+        try:
+            k = AuthKey.objects.get(playlist=p)
+        except AuthKey.DoesNotExist:
+            return JsonResponse({}, status=status.HTTP_404_NOT_FOUND)
+
         return JsonResponse({'key': k.key}, status=status.HTTP_200_OK)
 
     def post(self, request):
