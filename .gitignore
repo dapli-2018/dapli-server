@@ -108,3 +108,5 @@ venv.bak/
 .idea
 .idea/*
 dapli/secret.py
+playlist/migrations
+playlist/migrations/*

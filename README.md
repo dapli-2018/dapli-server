@@ -74,7 +74,7 @@ songs는 [[title, artist, album], ...] 형태의 이중 nested array
 |---|---|
 |code|Number(Integer)|
 |songs|Array|
-songs는 [[title, artist, album], ...] 형태의 이중 nested array
+songs는 [[title, is_on_playlist, is_played], ...] 형태의 이중 nested array
 
 - status code:
 
@@ -102,7 +102,7 @@ songs는 [[title, artist, album], ...] 형태의 이중 nested array
 |---|---|
 |code|Number(Integer)|
 |songs|Array|
-songs는 [[title, artist, album], ...] 형태의 이중 nested array
+songs는 [[title, artist, album, is_on_playlist, is_played], ...] 형태의 이중 nested array
 
 - status code:
 
@@ -119,7 +119,7 @@ songs는 [[title, artist, album], ...] 형태의 이중 nested array
 |Data|Description|Type|
 |---|---|---|
 |songs|required|Array|
-songs는 [[title, artist, album], ...] 형태의 이중 nested array
+songs는 [[title, artist, album, is_on_playlist, is_played], ...] 형태의 이중 nested array
 
 - response :
 
