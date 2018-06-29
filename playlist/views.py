@@ -10,19 +10,20 @@ from playlist.models import SongInfo, GroupPlaylist
 
 class HostView(APIView):
     def post(self, request):
-        songs = request.POST.get('songs')
+        songs = request.data.get('songs')
+
         if type(songs) is not list:
             return JsonResponse({'code': status.HTTP_412_PRECONDITION_FAILED})
 
-        key = GroupPlaylist.objects.order_by('-key').first()
+        max_key = GroupPlaylist.objects.order_by('-key').first()
         indices = json.dumps(list(range(len(songs))))
-        if key == None:
+        if max_key == None:
             key = 1000
             g = GroupPlaylist.objects.create(key=key)
             g.save()
         else:
             try:
-                g = GroupPlaylist.objects.create(key=key + 1)
+                g = GroupPlaylist.objects.create(key=max_key.key + 1)
                 g.save()
             except ValidationError:  # key를 9999까지 발급했을 때
                 try:
@@ -31,7 +32,7 @@ class HostView(APIView):
                 except IntegrityError:  # 너무 많은 접속자로 잠시 제한
                     return JsonResponse({'code': status.HTTP_503_SERVICE_UNAVAILABLE})
 
-        for i in range(songs):
+        for i in range(len(songs)):
             songinfo = SongInfo.objects.create(
                 group_playlist=g,
                 index=i,
@@ -51,8 +52,8 @@ class HostView(APIView):
             return JsonResponse({'code': status.HTTP_412_PRECONDITION_FAILED})
 
 
-        songs = SongInfo.objects.filter(group_playlist=g).order_by('index')\
-            .values_list('title', 'is_on_playlist', 'is_played')
+        songs = list(SongInfo.objects.filter(group_playlist=g).order_by('index')\
+            .values_list('title', 'is_on_playlist', 'is_played'))
         return JsonResponse({'code': status.HTTP_200_OK, 'songs': songs})
 
     def delete(self, request):
@@ -76,7 +77,7 @@ class GuestView(APIView):
             return JsonResponse({'code': status.HTTP_412_PRECONDITION_FAILED})
 
         songs = SongInfo.objects.filter(group_playlist=g).order_by('index') \
-            .values_list('title', 'is_on_playlist', 'is_played')
+            .values_list('title', 'artist', 'album', 'is_on_playlist', 'is_played')
         return JsonResponse({'code': status.HTTP_200_OK, 'songs': songs})
 
     def put(self, request):
