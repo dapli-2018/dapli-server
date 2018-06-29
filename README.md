@@ -14,6 +14,7 @@ $ python3 manage.py migrate
 $ python3 manage.py runserver 0.0.0.0:<port>
 ```
 
+
 ## API Reference
 
 ### Host
@@ -148,3 +149,8 @@ songs는 [[title, artist, album, is_on_playlist, is_played], ...] 형태의 이�
 |---|---|
 |200|Success|
 |412|Input data is wrong|
+
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
