@@ -93,6 +93,7 @@ songs는 [[title, is_on_playlist, is_played], ...] 형태의 이중 nested array
 |412|Input data is wrong|
 
 
+
 ### Guest
 
 1. GroupPlaylist 동기화: Host랑 동일
@@ -141,6 +142,163 @@ songs는 [[title, artist, album, is_on_playlist, is_played], ...] 형태의 이�
 |---|---|
 |200|Success|
 |412|Input data is wrong|
+
+
+
+### Keygen
+
+1. key 가져오기 by id
+
+- url: group/keygen
+- method: GET
+- request:
+
+|Data|Description|Type|
+|---|---|---|
+|id|Required|Number(Integer)|
+
+- response : status code
+
+|Code|Description|
+|---|---|
+|200|Success|
+|404|Key does not exist|
+|412|Input data is wrong|
+
+-----
+
+2. key 발급
+
+- url: group/keygen
+- method: POST
+- request:
+
+|Data|Description|Type|
+|---|---|---|
+|id|Required|Number(Integer)|
+
+- response : status code
+
+|Code|Description|
+|---|---|
+|201|Created|
+|412|Input data is wrong|
+
+-----
+
+3. 키 만료
+
+- url: group/keygen
+- method: DELETE
+- request:
+
+|Data|Description|Type|
+|---|---|---|
+|key|required|Number(Integer)|
+
+- response : status code
+
+|Code|Description|
+|---|---|
+|200|Success|
+
+
+
+### ImageView
+
+1. playlist image 가져오기
+
+- url: group/image
+- method: GET
+- request:
+
+| Data | Description | Type            |
+| ---- | ----------- | --------------- |
+| id   | required    | Number(Integer) |
+
+- response : status code
+
+| Code | Description |
+| ---- | ----------- |
+| 200  | Success     |
+
+-----
+
+2. playlist image 업로드
+
+- url: group/image
+- method: POST
+- request: **multipart/form-data** (JSON 아님 주의)
+
+| Data  | Description | Type            |
+| ----- | ----------- | --------------- |
+| id    | required    | Number(Integer) |
+| image | required    | image(jpg)      |
+
+- response : status code
+
+| Code | Description |
+| ---- | ----------- |
+| 200  | Success     |
+
+
+
+### Newsfeed
+
+1. newsfeed
+
+- url: group/newsfeed
+- method: GET
+- request: None
+- response: JSON
+
+```json
+[
+    {
+        "id": 1,
+        "title": "Hello Dapli",
+        "author": "",
+        "date": "2018-06-29T22:58:28.415651+09:00",
+        "content": "Hello world and my friends.",
+        "tag": "#echo"
+    },
+    ... 이하 생략
+]
+```
+
+
+
+### Playlist Detail
+
+1. playlist
+
+- url: group/playlist
+- method: GET
+- request: 
+
+| Data | Description | Type            |
+| ---- | ----------- | --------------- |
+| id   | required    | Number(Integer) |
+
+- response: JSON
+
+```json
+[
+    {
+        "title": "The Middle",
+        "artist": "Zedd",
+        "album": "The Middle",
+        "is_on_playlist": true,
+        "is_played": false
+    },
+    ... 이하 생략
+]
+```
+
+
+
+
+
 
 
 ## License
