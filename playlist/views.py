@@ -173,3 +173,17 @@ def newsfeed(request):
     serializer = PlaylistFeedSerializer(Playlist.objects.all(), many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+def search(request):
+    criterion = request.GET.get('criterion')
+    query = request.GET.get('query')
+
+    if (criterion == "title"):
+        ps = Playlist.objects.filter(title__icontains=query)
+        result_serializer = PlaylistFeedSerializer(ps, many=True)
+        return Response(result_serializer.data, status.HTTP_200_OK)
+
+    elif (criterion == "Author"):
+        ps = Playlist.objects.filter(author__icontains=query)
+        result_serializer = PlaylistFeedSerializer(ps, many=True)
+        return Response(result_serializer, status=status.HTTP_200_OK)

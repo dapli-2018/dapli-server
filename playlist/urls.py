@@ -7,5 +7,6 @@ urlpatterns = [
     path('image', views.ImageView.as_view()),
     path('keygen', views.KeyView.as_view()),
     path('playlist', views.playlist_detail),
-    path('newsfeed', views.newsfeed)
+    path('newsfeed', views.newsfeed),
+    path('search', views.search)
 ]
