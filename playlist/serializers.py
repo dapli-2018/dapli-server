@@ -4,7 +4,7 @@ from .models import Playlist, SongInfo
 class PlaylistFeedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Playlist
-        fields = ('title', 'author', 'date', 'content', 'tag')
+        fields = ('id', 'title', 'author', 'date', 'content', 'tag')
 
 class PlaylistImageSerializer(serializers.ModelSerializer):
     class Meta:
