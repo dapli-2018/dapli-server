@@ -52,13 +52,16 @@ class HostView(APIView):
             pass
         return JsonResponse({}, status=status.HTTP_200_OK)
 
-    def put(self, request): # authkey 삭제
-        key = request.data.get('key')
-        AuthKey.objects.get(key=key).delete()
-        return JsonResponse({}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def generate_key(request):
+    id = request.data.get('id')
+
+    try:
+        p = Playlist.objects.get(id=id)
+    except Playlist.DoesNotExist:
+        return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
+
     if AuthKey.objects.count() < 9000:
         for i in range(1000, 9999):
             try:
@@ -71,6 +74,13 @@ def generate_key(request):
                 return JsonResponse({'key': key}, status=status.HTTP_201_CREATED)
     else:
         return JsonResponse({}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+@api_view(['DELETE'])
+def expire_key(request):
+    key = request.data.get('key')
+    AuthKey.objects.get(key=key).delete()
+    return JsonResponse({}, status=status.HTTP_200_OK)
+
 
 
 class GuestView(APIView):
