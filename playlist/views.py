@@ -19,18 +19,18 @@ class HostView(APIView):
             for i in range(1000, 9999):
                 try:
                     key = randint(1000, 9999)
-                    g = Playlist.objects.create(key=key)
-                    g.save()
+                    p = Playlist.objects.create(key=key)
+                    p.save()
                 except IntegrityError:
                     continue
                 else:
                     break
         else:
-            return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
+            return JsonResponse({}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
         for i in range(len(songs)):
             songinfo = SongInfo.objects.create(
-                playlist=g,
+                playlist=p,
                 index=i,
                 title=songs[i][0],
                 artist=songs[i][1],
@@ -38,25 +38,24 @@ class HostView(APIView):
             )
             songinfo.save()
 
-        return JsonResponse({'key': key}, status=status.HTTP_201_CREATED)
+        return JsonResponse({'key': key, 'id': p.id}, status=status.HTTP_201_CREATED)
 
     def get(self, request):
         key = request.GET.get('key')
         try:
-            g = Playlist.objects.get(key=key)
+            p = Playlist.objects.get(key=key)
         except Playlist.DoesNotExist:
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
-
-        songs = list(SongInfo.objects.filter(playlist=g).order_by('index')\
+        songs = list(SongInfo.objects.filter(playlist=p).order_by('index')\
             .values_list('title', 'is_on_playlist', 'is_played'))
         return JsonResponse({'songs': songs}, status=status.HTTP_200_OK)
 
     def delete(self, request):
         key = request.data.get('key')
         try:
-            g = Playlist.objects.get(key=key)
-            g.delete()
+            p = Playlist.objects.get(key=key)
+            p.delete()
         except Playlist.DoesNotExist:
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
