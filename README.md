@@ -1,5 +1,18 @@
 # dapli-server
+![license](https://img.shields.io/badge/license-MIT-brightgreen.svg)
+![python version](https://img.shields.io/badge/python-3.6-blue.svg)
+
 Server for Dapli
+
+## How to start
+```bash
+$ pip3 install django djangorestframework
+$ git clone https://github/dapli-2018/dapli-server
+$ cd dapli-server
+$ python3 manage.py makemigrations
+$ python3 manage.py migrate
+$ python3 manage.py runserver 0.0.0.0:<port>
+```
 
 ## API Reference
 
