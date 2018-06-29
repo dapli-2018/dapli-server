@@ -55,9 +55,14 @@ class HostView(APIView):
 
 class ImageView(APIView):
     parser_classes = (MultiPartParser, FormParser)
+    def get(self, request):
+        id = request.GET.get('id')
+        image_serializer = PlaylistImageSerializer(Playlist.objects.get(id=id))
+        return Response(image_serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request, *args, **kwargs):
-        image_serializer = PlaylistImageSerializer(data=request.data)
+    def post(self, request):
+        id = request.data.get('id')
+        image_serializer = PlaylistImageSerializer(Playlist.objects.get(id=id), data=request.data)
         if image_serializer.is_valid():
             image_serializer.save()
             return Response(image_serializer.data, status=status.HTTP_201_CREATED)
