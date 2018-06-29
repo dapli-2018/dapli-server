@@ -13,7 +13,7 @@ class HostView(APIView):
         songs = request.data.get('songs')
 
         if type(songs) is not list:
-            return JsonResponse({'code': status.HTTP_412_PRECONDITION_FAILED})
+            return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
         max_key = GroupPlaylist.objects.order_by('-key').first()
         indices = json.dumps(list(range(len(songs))))
@@ -25,12 +25,13 @@ class HostView(APIView):
             try:
                 g = GroupPlaylist.objects.create(key=max_key.key + 1)
                 g.save()
+                key = g.key
             except ValidationError:  # key를 9999까지 발급했을 때
                 try:
                     g = GroupPlaylist.objects.create(key=1000)
                     g.save()
                 except IntegrityError:  # 너무 많은 접속자로 잠시 제한
-                    return JsonResponse({'code': status.HTTP_503_SERVICE_UNAVAILABLE})
+                    return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
         for i in range(len(songs)):
             songinfo = SongInfo.objects.create(
@@ -42,19 +43,19 @@ class HostView(APIView):
             )
             songinfo.save()
 
-        return JsonResponse({'code': status.HTTP_201_CREATED, 'key': key})
+        return JsonResponse({'key': key}, status=status.HTTP_201_CREATED)
 
     def get(self, request):
         key = request.GET.get('key')
         try:
             g = GroupPlaylist.objects.get(key=key)
         except GroupPlaylist.DoesNotExist:
-            return JsonResponse({'code': status.HTTP_412_PRECONDITION_FAILED})
+            return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
 
         songs = list(SongInfo.objects.filter(group_playlist=g).order_by('index')\
             .values_list('title', 'is_on_playlist', 'is_played'))
-        return JsonResponse({'code': status.HTTP_200_OK, 'songs': songs})
+        return JsonResponse({'songs': songs}, status=status.HTTP_200_OK)
 
     def delete(self, request):
         key = request.data.get('key')
@@ -62,9 +63,9 @@ class HostView(APIView):
             g = GroupPlaylist.objects.get(key=key)
             g.delete()
         except GroupPlaylist.DoesNotExist:
-            return JsonResponse({'code': status.HTTP_412_PRECONDITION_FAILED})
+            return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
-        return JsonResponse({'code': status.HTTP_200_OK})
+        return JsonResponse({}, status=status.HTTP_200_OK)
 
 
 class GuestView(APIView):
@@ -74,11 +75,11 @@ class GuestView(APIView):
         try:
             g = GroupPlaylist.objects.get(key=key)
         except GroupPlaylist.DoesNotExist:
-            return JsonResponse({'code': status.HTTP_412_PRECONDITION_FAILED})
+            return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
         songs = SongInfo.objects.filter(group_playlist=g).order_by('index') \
             .values_list('title', 'artist', 'album', 'is_on_playlist', 'is_played')
-        return JsonResponse({'code': status.HTTP_200_OK, 'songs': list(songs)})
+        return JsonResponse({'songs': list(songs)}, status=status.HTTP_200_OK)
 
     def put(self, request):
         key = request.data.get('key')
@@ -87,10 +88,10 @@ class GuestView(APIView):
         try:
             g = GroupPlaylist.objects.get(key=key)
         except GroupPlaylist.DoesNotExist:
-            return JsonResponse({'code': status.HTTP_412_PRECONDITION_FAILED})
+            return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
         if type(new_playlist) is not list:
-            return JsonResponse({'code': status.HTTP_412_PRECONDITION_FAILED})
+            return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
         with transaction.atomic():
             for song in SongInfo.objects.filter(group_playlist=g):
@@ -101,7 +102,7 @@ class GuestView(APIView):
                         song.is_played = new_playlist[i][4]
                         song.save()
 
-        return JsonResponse({'code': status.HTTP_200_OK})
+        return JsonResponse({}, status=status.HTTP_200_OK)
 
 
 
