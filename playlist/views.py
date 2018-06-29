@@ -78,11 +78,11 @@ class GuestView(APIView):
 
         songs = SongInfo.objects.filter(group_playlist=g).order_by('index') \
             .values_list('title', 'artist', 'album', 'is_on_playlist', 'is_played')
-        return JsonResponse({'code': status.HTTP_200_OK, 'songs': songs})
+        return JsonResponse({'code': status.HTTP_200_OK, 'songs': list(songs)})
 
     def put(self, request):
-        key = request.GET.get('key')
-        new_playlist = request.GET.get('songs')
+        key = request.data.get('key')
+        new_playlist = request.data.get('songs')
 
         try:
             g = GroupPlaylist.objects.get(key=key)
@@ -94,9 +94,11 @@ class GuestView(APIView):
 
         with transaction.atomic():
             for song in SongInfo.objects.filter(group_playlist=g):
-                for i in range(new_playlist):
+                for i in range(len(new_playlist)):
                     if (song.title == new_playlist[i][0]):
                         song.index = i
+                        song.is_on_playlist = new_playlist[i][3]
+                        song.is_played = new_playlist[i][4]
                         song.save()
 
         return JsonResponse({'code': status.HTTP_200_OK})
