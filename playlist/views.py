@@ -30,7 +30,7 @@ class HostView(APIView):
 
         for i in range(len(songs)):
             songinfo = SongInfo.objects.create(
-                group_playlist=g,
+                playlist=g,
                 index=i,
                 title=songs[i][0],
                 artist=songs[i][1],
@@ -48,7 +48,7 @@ class HostView(APIView):
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
 
-        songs = list(SongInfo.objects.filter(group_playlist=g).order_by('index')\
+        songs = list(SongInfo.objects.filter(playlist=g).order_by('index')\
             .values_list('title', 'is_on_playlist', 'is_played'))
         return JsonResponse({'songs': songs}, status=status.HTTP_200_OK)
 
@@ -68,20 +68,20 @@ class GuestView(APIView):
         key = request.GET.get('key')
 
         try:
-            g = Playlist.objects.get(key=key)
+            p = Playlist.objects.get(key=key)
         except Playlist.DoesNotExist:
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
-        songs = SongInfo.objects.filter(group_playlist=g).order_by('index') \
+        songs = SongInfo.objects.filter(playlist=p).order_by('index') \
             .values_list('title', 'artist', 'album', 'is_on_playlist', 'is_played')
-        return JsonResponse({'songs': list(songs)}, status=status.HTTP_200_OK)
+        return JsonResponse({'songs': list(songs), 'id': p.id}, status=status.HTTP_200_OK)
 
     def put(self, request):
-        key = request.data.get('key')
+        id = request.data.get('id')
         new_playlist = request.data.get('songs')
 
         try:
-            g = Playlist.objects.get(key=key)
+            p = Playlist.objects.get(id=id)
         except Playlist.DoesNotExist:
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
@@ -89,7 +89,7 @@ class GuestView(APIView):
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
         with transaction.atomic():
-            for song in SongInfo.objects.filter(group_playlist=g):
+            for song in SongInfo.objects.filter(playlist=p):
                 for i in range(len(new_playlist)):
                     if song.title == new_playlist[i][0] :
                         song.index = i
