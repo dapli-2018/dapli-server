@@ -9,7 +9,7 @@ class PlaylistFeedSerializer(serializers.ModelSerializer):
 class PlaylistImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Playlist
-        fields = ('profile_image')
+        fields = ('image',)
 
 class SongInfoSerializer(serializers.ModelSerializer):
     class Meta:
