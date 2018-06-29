@@ -6,8 +6,8 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import SongInfo, Playlist, AuthKey
-from .serializers import SongInfoSerializer, PlaylistFeedSerializer, PlaylistImageSerializer
+from .models import SongInfo, Playlist, AuthKey, Like
+from .serializers import SongInfoSerializer, PlaylistFeedSerializer, PlaylistImageSerializer, LikeSerializer
 
 class HostView(APIView):
     def post(self, request):
@@ -21,6 +21,7 @@ class HostView(APIView):
             return JsonResponse({}, status=status.HTTP_412_PRECONDITION_FAILED)
 
         p = Playlist.objects.create(title=title, author=author, content=content, tag=tag)
+        Like.objects.create(playlist=p).save()
 
         for i in range(len(songs)):
             songinfo = SongInfo.objects.create(
@@ -187,3 +188,19 @@ def search(request):
         ps = Playlist.objects.filter(author__icontains=query)
         result_serializer = PlaylistFeedSerializer(ps, many=True)
         return Response(result_serializer, status=status.HTTP_200_OK)
+
+class LikeView(APIView):
+    def get(self, request):
+        id = request.GET.get('id')
+        p = Playlist.objects.get(id=id)
+        like_serializer = LikeSerializer(p)
+        return Response(like_serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        id = request.GET.get('id')
+        p = Playlist.objects.get(id=id)
+        l = Like.objects.get(playlist=p)
+        l.count += 1
+        return JsonResponse({'count': l.count}, status=status.HTTP_200_OK)
+
+

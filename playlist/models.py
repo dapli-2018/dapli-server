@@ -24,3 +24,7 @@ class AuthKey(models.Model):
     playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)
     key = models.IntegerField(unique=True, validators=[MaxValueValidator(9999), MinValueValidator(1000)])
 
+class Like(models.Model):
+    playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)
+    count = models.PositiveIntegerField(default=0)
+

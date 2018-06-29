@@ -337,6 +337,39 @@ songs는 [[title, artist, album, is_on_playlist, is_played], ...] 형태의 이�
 ```
 
 
+### Like
+
+1. 좋아요 갯수 가져오기
+
+- url: group/like
+- method: GET
+- request
+
+| Data | Description | Type            |
+| ---- | ----------- | --------------- |
+| id   | required    | Number(Integer) |
+
+- response:
+
+|Name|Type|
+|---|---|
+|count|Number(Integer)|
+
+2. 좋아요 누르기
+
+- url: group/like
+- method: POST
+- request
+
+| Data | Description | Type            |
+| ---- | ----------- | --------------- |
+| id   | required    | Number(Integer) |
+
+- response:
+
+|Name|Type|
+|---|---|
+|count|Number(Integer)|
 
 
 ## License
