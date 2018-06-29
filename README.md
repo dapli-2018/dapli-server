@@ -14,6 +14,7 @@ Server for Dapli
 |Data|Description|Type|
 |---|---|---|
 |songs|required|Array|
+songs는 [[title, artist, album], ...] 형태의 이중 nested array
 
 - response
 
@@ -25,6 +26,7 @@ Server for Dapli
 - status code
 
 |Code|Description|
+|---|---|
 |201|Success|
 |412|Input data is wrong|
 |503|Too many users. Wait a minute.|
@@ -50,6 +52,7 @@ Server for Dapli
 - status code:
 
 |Code|Description|
+|---|---|
 |200|Success|
 |412|Input data is wrong|
 
@@ -70,10 +73,12 @@ Server for Dapli
 |Name|Type|
 |---|---|
 |code|Number(Integer)|
-|indices|Array|
+|songs|Array|
+songs는 [[title, artist, album], ...] 형태의 이중 nested array
 
 - status code:
 
 |Code|Description|
+|---|---|
 |200|Success|
 |412|Input data is wrong|
